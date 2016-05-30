@@ -1,0 +1,41 @@
+<!doctype html>
+<html>
+	<head></head>
+	<body>
+		<script src="..\src\task.js"></script>
+		<script src="..\src\cyako.js"></script>
+		<script>
+		// have a try
+		var c = new Cyako('ws://localhost:12345/');
+		// let i = 10;
+		// var s = 0, f = 0;
+		// while (i--) {
+		// 	c.do('GetIndexArticles',{a:1,b:2,c:3,time: Date.now()},{d:4,f:5}).then((json)=>{
+		// 		console.log('--USER: Response received.');
+		// 		s++;
+		// 	},(error)=>{
+		// 		console.log('--USER: Receive error:',error);
+		// 		f++;
+		// 	});
+		// }		
+		for (var i = 500; i >= 0; i--) {				
+			c.do('TestJSONBaseLoad',{},{}).then((json)=>{
+					console.log(json)
+				},(error)=>{
+				console.log(error)
+			})
+			c.do('TestJSONBaseSave',{a:1,b:2,c:3},{a:1,b:2,c:3}).then((json)=>{
+					console.log(json)
+				},(error)=>{
+				console.log(error)
+			})
+		}
+
+		c.do('PrintStat',{},{}).then((json)=>{
+			console.log(json)
+		},(error)=>{
+			console.log(error)
+		})
+		</script>
+	</body>
+</html>
