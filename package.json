@@ -1,0 +1,22 @@
+{
+  "name": "cyako.js",
+  "version": "0.0.1",
+  "description": "Cyako in frontend\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[C api in frontend",
+  "main": "cyako.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Cyako/Cyako.js.git"
+  },
+  "keywords": [
+    "cyako"
+  ],
+  "author": "Cyako Author",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Cyako/Cyako.js/issues"
+  },
+  "homepage": "https://github.com/Cyako/Cyako.js#readme"
+}
