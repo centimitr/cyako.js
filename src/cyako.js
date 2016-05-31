@@ -84,7 +84,7 @@ export class Cyako {
     	}, this.CONTINUE_SEND_REST_DELAY);
     };
 
-    do(method, params, data) {
+    fetch(method, params, data) {
         return new Promise((resolve, reject) => {
             // add new task.
             let w = new CyakoTask((this._requestOrder++) + '.' + method, method, params, data);
