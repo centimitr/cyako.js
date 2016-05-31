@@ -2,21 +2,21 @@
 <html>
 	<head></head>
 	<body>
-		<script src="../bundle.js"></script>
+		<script src="../dist/cyako.js"></script>
 		<script>
-		var c = new Cyako('ws://localhost:3000/');
-		for (var i = 500; i >= 0; i--) {				
-			c.fetch('TestJSONBaseLoad',{},{}).then((json)=>{
-					console.log(json)
-				},(error)=>{
-				console.log(error)
-			})
-			c.fetch('TestJSONBaseSave',{a:1,b:2,c:3},{a:1,b:2,c:3}).then((json)=>{
-					console.log(json)
-				},(error)=>{
-				console.log(error)
-			})
-		}
+		var c = new Cyako('ws://localhost:12345/');
+		// for (var i = 500; i >= 0; i--) {				
+		// 	c.fetch('TestJSONBaseLoad',{},{}).then((json)=>{
+		// 			console.log(json)
+		// 		},(error)=>{
+		// 		console.log(error)
+		// 	})
+		// 	c.fetch('TestJSONBaseSave',{a:1,b:2,c:3},{a:1,b:2,c:3}).then((json)=>{
+		// 			console.log(json)
+		// 		},(error)=>{
+		// 		console.log(error)
+		// 	})
+		// }
 		c.fetch('PrintStat',{},{}).then((json)=>{
 			console.log(json)
 		},(error)=>{

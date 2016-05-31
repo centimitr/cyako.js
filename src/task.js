@@ -1,11 +1,11 @@
 export class CyakoTask {
-	constructor(id,session, method, params, data){
+	constructor(id, method, params, data){
 		this.id = id|| Date.now();
 		this.status = 'queued';
 		this.request = {
 			id: this.id,
-			session: session,
-			method: method || "",
+			// session: session,
+			method: method,
 			params: JSON.stringify(params || {}),
 			data: JSON.stringify(data || {})
 		}
