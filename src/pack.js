@@ -1,0 +1,1 @@
+window.Cyako = require("./cyako").Cyako;

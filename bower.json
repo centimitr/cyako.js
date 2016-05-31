@@ -1,0 +1,20 @@
+{
+  "name": "cyako.js",
+  "description": "Cyako in frontend\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[C api in frontend",
+  "main": "cyako.js",
+  "authors": [
+    "Cyako Author"
+  ],
+  "license": "ISC",
+  "keywords": [
+    "cyako"
+  ],
+  "homepage": "https://github.com/Cyako/Cyako.js",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}

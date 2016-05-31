@@ -1,4 +1,7 @@
-class Cyako {
+import {CyakoQueue} from "./queue";
+import {CyakoTask} from "./task";
+
+export class Cyako {
     constructor(url) {
         this.url = url;
         this.websocket;
@@ -84,7 +87,7 @@ class Cyako {
     do(method, params, data) {
         return new Promise((resolve, reject) => {
             // add new task.
-            let w = new WebMessageTask((this._requestOrder++) + '.' + method, method, params, data);
+            let w = new CyakoTask((this._requestOrder++) + '.' + method, method, params, data);
         	w.onreceive = (data) =>{
         		w.setResolve();
                 data.params = JSON.parse(data.params);

@@ -1,9 +1,10 @@
-class WebMessageTask {
-	constructor(id,method, params, data){
+export class CyakoTask {
+	constructor(id,session, method, params, data){
 		this.id = id|| Date.now();
 		this.status = 'queued';
 		this.request = {
 			id: this.id,
+			session: session,
 			method: method || "",
 			params: JSON.stringify(params || {}),
 			data: JSON.stringify(data || {})

@@ -1,8 +1,8 @@
-class WebMessageQueue {
+export class CyakoQueue {
 	constructor() {
 
 	}
-    queuedNum = function(){
+    queuedNum(){
     	let num = 0;
     	for (let item of this){
     		if (item.isQueued()) {
@@ -11,7 +11,7 @@ class WebMessageQueue {
     	}
     	return num;
     };
-    sentNum = function(){
+    sentNum(){
     	let num = 0;
     	for (let item of this){
     		if (item.isSent()) {
@@ -20,7 +20,7 @@ class WebMessageQueue {
     	}
     	return num;
     };
-    getFirstQueued = function () {
+    getFirstQueued() {
         for (let item of this) {
             if (item.isQueued()) {
                 return item;
