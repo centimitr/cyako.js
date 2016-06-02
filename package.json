@@ -1,6 +1,6 @@
 {
   "name": "cyako.js",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Cyako in frontend\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[C api in frontend",
   "main": "bundle.js",
   "scripts": {
