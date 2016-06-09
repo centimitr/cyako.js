@@ -1,37 +1,18 @@
-export class CyakoTask {
-	constructor(id, method, params, data){
-		this.id = id|| Date.now();
-		this.status = 'queued';
-		this.request = {
-			id: this.id,
-			// session: session,
-			method: method,
-			params: JSON.stringify(params || {}),
-			data: JSON.stringify(data || {})
-		}
+// import {CyakoRequest} from "./request"
+
+export class CyakoTask{
+	constructor(type,request,resolve,reject){
+		this.id = request.id;
+		this.type = type;
+		this.request = request;
+		this.onresolve = resolve;
+		this.onreject = reject;
+		// this.time = new Date().now();
 	}
-	isQueued(){
-		return this.status === 'queued';
+	expectMultiResponses(){
+		return this.type === 'multiple';
 	}
-	isSent(){
-		return this.status === 'sent';
+	isTimeout(){
+		return false;
 	}
-	setSent(){
-		this.status='sent';
-	}
-	setReject(){
-		this.status='reject';
-	}
-	setResolve(){
-		this.status='resolve';
-	}
-	startTiming(delay){
-		setTimeout(()=>{
-			if (this.isSent()) {
-				this.ontimeout()
-			}
-		}, delay)
-	}
-	onreceive(){}
-	ontimeout(){}
 }
