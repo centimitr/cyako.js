@@ -1,1 +1,0 @@
-window.Cyako = require("./cyako").CyakoInstance;

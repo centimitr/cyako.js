@@ -45,7 +45,7 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	window.Cyako = __webpack_require__(1).CyakoInstance;
-	// window.cyako = require("./instance").CyakoInstance;
+	window.cyako = __webpack_require__(1).CyakoInstance;
 
 
 /***/ },
@@ -67,10 +67,6 @@
 	        this.receiver = new receiver_1.CyakoReceiver(this.queue);
 	        this.socket = new socket_1.CyakoSocket(this.url, this.receiver);
 	        this.sender = new sender_1.CyakoSender(this.queue, this.socket);
-	        // initial
-	        // this.connector.connect().then((ok)=>{
-	        // 	this.bindEvents();
-	        // },(err)=>{});
 	    }
 	    ;
 	    // API
@@ -152,15 +148,6 @@
 	        this.sent = new Map();
 	        // this.finished = new Map();
 	    }
-	    // _addTask()
-	    // addSingleRespTask(task){}
-	    // removeSingleRespTask(){}
-	    // addMultiRespTask(){}
-	    // removeMultiRespTask(){}
-	    // addTask(){}
-	    // removeTask(){}
-	    // resolveResp(){}
-	    // clean()
 	    CyakoQueue.prototype.add = function (task) {
 	        this.unsent.set(task.id, task);
 	    };
