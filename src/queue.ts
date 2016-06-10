@@ -1,5 +1,5 @@
 export class CyakoQueue{
-	constructor{
+	constructor(){
 		this.unsent = new Map();
 		this.sent = new Map();
 		// this.finished = new Map();
