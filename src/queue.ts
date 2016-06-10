@@ -1,4 +1,8 @@
+import {CyakoTask} from "./task";
+
 export class CyakoQueue{
+	public unsent: any;
+	public sent: any;
 	constructor(){
 		this.unsent = new Map();
 		this.sent = new Map();
@@ -13,26 +17,26 @@ export class CyakoQueue{
 	// removeTask(){}
 	// resolveResp(){}
 	// clean()
-	add(task){
+	add(task:CyakoTask){
 		this.unsent.set(task.id,task);
 	}
-	get(taskId){
+	get(taskId:string){
 		return this.sent.get(taskId);
 	}
-	setSent(taskId){
+	setSent(taskId:string){
 		if (this.unsent.has(taskId)){
 			this.sent.set(taskId,this.unsent.get(taskId));
 			this.unsent.delete(taskId)
 		}
 	}
-	setFinished(taskId){
+	setFinished(taskId:string){
 		if (this.sent.has(taskId)) {
 			this.sent.delete(taskId)
 		}
 	}
 	clean(){
 		let timeout = 10000;
-		let op = (sent) => {
+		let op = (sent:any) => {
 			let entries = sent.entries(); 
 			let item = entries.next();
 			while(!item.done){
@@ -44,7 +48,7 @@ export class CyakoQueue{
 			}
 		};
 		setTimeout(()=>{
-			op();
+			op(this.sent);
 		},timeout)
 	}
 }

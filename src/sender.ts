@@ -1,9 +1,14 @@
-export class CyakoSender{
-	constructor(queue,socket){
+import {CyakoQueue} from "./queue";
+import {CyakoSocket} from "./socket";
+
+export class CyakoSender {
+	public queue: CyakoQueue;
+	public socket: CyakoSocket;
+	constructor(queue:CyakoQueue,socket:CyakoSocket){
 		this.queue = queue;
 		this.socket = socket;
 	}
-	send(){
+	public send(){
 		let sendUnsent = () => {
 			let entries = this.queue.unsent.entries();
 			let item = entries.next();

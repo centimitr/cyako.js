@@ -1,14 +1,19 @@
-// import {CyakoConnector} from "./connector";
-import {CyakoTask} from "./task";
 import {CyakoRequest} from "./request";
+import {CyakoTask} from "./task";
 import {CyakoQueue} from "./queue";
-// import {CyakoSender} from "./sender";
-// import {CyakoReceiver} from "./receiver";
+import {CyakoSender} from "./sender";
+import {CyakoReceiver} from "./receiver";
+import {CyakoSocket} from "./socket";
 
 export class CyakoInstance {
-    constructor(url) {
-    	this.url=url;
-    	this.websocket;
+    // public websocket;
+    public url: string;
+    public queue: CyakoQueue;
+    public receiver: CyakoReceiver;
+    public sender: CyakoSender;
+    public socket: CyakoSocket;
+    constructor(url:string) {
+        this.url=url;
     	this.queue = new CyakoQueue();
     	// this.socket = new socket((socket)=>{this.websocket = socket;});
     	this.receiver = new CyakoReceiver(this.queue);
@@ -21,20 +26,20 @@ export class CyakoInstance {
     };
 
     // API
-    fetch(method,params,data){
+    public fetch(method:string,params:Object,data:Object){
     	let request = new CyakoRequest(method,params,data);
     	return new Promise((resolve,rejecct) => {
-    		let task = new CyakoTask(type:'single',request:request,onresolve:resolve,onreject:rejecct);
+    		let task = new CyakoTask('single',request,resolve,rejecct);
     		this.queue.add(task);
     		this.sender.send();
     	});
     }
     
-    listen(method,params,data){
+    public listen(method: string, params: Object, data: Object) {
     	let request = new CyakoRequest(method,params,data);
     	return new Promise((resolve,rejecct) => {
-    		let task = new CyakoTask(type:'multiple',request:request,onresolve:resolve,onreject:rejecct);
-    		this.queue.add(task);
+            let task = new CyakoTask('multiple', request, resolve, rejecct);
+            this.queue.add(task);
     		this.sender.send()
     	});
     }

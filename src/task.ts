@@ -1,7 +1,12 @@
-// import {CyakoRequest} from "./request"
+import {CyakoRequest} from "./request"
 
 export class CyakoTask{
-	constructor(type,request,resolve,reject){
+	public id: string;
+	public type: string;
+	public request: CyakoRequest;
+	public onresolve: Function;
+	public onreject: Function;
+	constructor(type :string,request:CyakoRequest,resolve:Function,reject:Function){
 		this.id = request.id;
 		this.type = type;
 		this.request = request;
