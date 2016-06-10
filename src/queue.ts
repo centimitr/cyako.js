@@ -8,15 +8,6 @@ export class CyakoQueue{
 		this.sent = new Map();
 		// this.finished = new Map();
 	}
-	// _addTask()
-	// addSingleRespTask(task){}
-	// removeSingleRespTask(){}
-	// addMultiRespTask(){}
-	// removeMultiRespTask(){}
-	// addTask(){}
-	// removeTask(){}
-	// resolveResp(){}
-	// clean()
 	add(task:CyakoTask){
 		this.unsent.set(task.id,task);
 	}
