@@ -2,9 +2,10 @@
 <html>
 	<head></head>
 	<body>
-		<script src="../dist/cyako.js"></script>
+		<div>Test</div>
+		<script src="../dist/bundle.js"></script>
 		<script>
-		var c = new Cyako('ws://localhost:12345/');
+		var c = new Cyako('ws://localhost:3000/');
 		// for (var i = 500; i >= 0; i--) {				
 		// 	c.fetch('TestJSONBaseLoad',{},{}).then((json)=>{
 		// 			console.log(json)
@@ -17,7 +18,7 @@
 		// 		console.log(error)
 		// 	})
 		// }
-		c.fetch('PrintStat',{},{}).then((json)=>{
+		c.fetch('KVStoreExample.Example',{},{}).then((json)=>{
 			console.log(json)
 		},(error)=>{
 			console.log(error)

@@ -12,6 +12,7 @@ export class CyakoInstance {
     public receiver: CyakoReceiver;
     public sender: CyakoSender;
     public socket: CyakoSocket;
+    private index: number;
     constructor(url:string) {
         this.url=url;
     	this.queue = new CyakoQueue();
@@ -19,11 +20,13 @@ export class CyakoInstance {
     	this.receiver = new CyakoReceiver(this.queue);
     	this.socket = new CyakoSocket(this.url,this.receiver);
     	this.sender = new CyakoSender(this.queue,this.socket);
+        this.index = 0;
     };
 
     // API
     fetch(method:string,params:Object,data:Object){
     	let request = new CyakoRequest(method,params,data);
+        request.setId("#" + this.index + ":" + method);
     	return new Promise((resolve,rejecct) => {
     		let task = new CyakoTask('single',request,resolve,rejecct);
     		this.queue.add(task);
@@ -33,6 +36,7 @@ export class CyakoInstance {
     
     listen(method: string, params: Object, data: Object) {
     	let request = new CyakoRequest(method,params,data);
+        request.setId("#" + this.index + ":" + method);
     	return new Promise((resolve,rejecct) => {
             let task = new CyakoTask('multiple', request, resolve, rejecct);
             this.queue.add(task);

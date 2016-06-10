@@ -12,7 +12,7 @@ export class CyakoTask{
 		this.request = request;
 		this.onresolve = resolve;
 		this.onreject = reject;
-		// this.time = new Date().now();
+		// this.createTime = new Date().toUTCString();
 	}
 	expectMultiResponses(){
 		return this.type === 'multiple';

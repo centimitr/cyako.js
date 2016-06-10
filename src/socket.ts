@@ -14,6 +14,8 @@ export class CyakoSocket{
 	}
 	send(request:CyakoRequest){
 		if (this.isConnected){
+			console.log(request);
+			console.log(JSON.stringify(request));
 			this.websocket.send(JSON.stringify(request));
 		}
 	}
@@ -32,6 +34,7 @@ export class CyakoSocket{
    		    	// this.websocket.onerror = () =>{};
 				this.websocket.onopen = () => {
 					// this.socketCallback(this.websocket)
+					console.log("Connected.")
 					resolve();
 				}
   		  	}else{

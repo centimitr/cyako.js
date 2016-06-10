@@ -67,12 +67,14 @@
 	        this.receiver = new receiver_1.CyakoReceiver(this.queue);
 	        this.socket = new socket_1.CyakoSocket(this.url, this.receiver);
 	        this.sender = new sender_1.CyakoSender(this.queue, this.socket);
+	        this.index = 0;
 	    }
 	    ;
 	    // API
 	    CyakoInstance.prototype.fetch = function (method, params, data) {
 	        var _this = this;
 	        var request = new request_1.CyakoRequest(method, params, data);
+	        request.setId("#" + this.index + ":" + method);
 	        return new Promise(function (resolve, rejecct) {
 	            var task = new task_1.CyakoTask('single', request, resolve, rejecct);
 	            _this.queue.add(task);
@@ -82,6 +84,7 @@
 	    CyakoInstance.prototype.listen = function (method, params, data) {
 	        var _this = this;
 	        var request = new request_1.CyakoRequest(method, params, data);
+	        request.setId("#" + this.index + ":" + method);
 	        return new Promise(function (resolve, rejecct) {
 	            var task = new task_1.CyakoTask('multiple', request, resolve, rejecct);
 	            _this.queue.add(task);
@@ -100,13 +103,13 @@
 	"use strict";
 	var CyakoRequest = (function () {
 	    function CyakoRequest(method, params, data) {
-	        // this.id = id || Date.now().toString();
-	        // this.params = JSON.stringify(params || {}),
-	        // this.data = JSON.stringify(data || {})
 	        this.method = method,
 	            this.params = params,
 	            this.data = data;
 	    }
+	    CyakoRequest.prototype.setId = function (id) {
+	        this.id = id;
+	    };
 	    return CyakoRequest;
 	}());
 	exports.CyakoRequest = CyakoRequest;
@@ -124,7 +127,7 @@
 	        this.request = request;
 	        this.onresolve = resolve;
 	        this.onreject = reject;
-	        // this.time = new Date().now();
+	        // this.createTime = new Date().toUTCString();
 	    }
 	    CyakoTask.prototype.expectMultiResponses = function () {
 	        return this.type === 'multiple';
@@ -204,8 +207,9 @@
 	            var entries = _this.queue.unsent.entries();
 	            var item = entries.next();
 	            while (!item.done) {
-	                var request = item.value.request;
+	                var request = item.value[1].request;
 	                _this.socket.send(request);
+	                item = entries.next();
 	            }
 	        };
 	        if (this.socket.isConnected()) {
@@ -262,6 +266,8 @@
 	    }
 	    CyakoSocket.prototype.send = function (request) {
 	        if (this.isConnected) {
+	            console.log(request);
+	            console.log(JSON.stringify(request));
 	            this.websocket.send(JSON.stringify(request));
 	        }
 	    };
@@ -278,6 +284,7 @@
 	                // this.websocket.onerror = () =>{};
 	                _this.websocket.onopen = function () {
 	                    // this.socketCallback(this.websocket)
+	                    console.log("Connected.");
 	                    resolve();
 	                };
 	            }
