@@ -14,8 +14,6 @@ export class CyakoSocket{
 	}
 	send(request:CyakoRequest){
 		if (this.isConnected){
-			console.log(request);
-			console.log(JSON.stringify(request));
 			this.websocket.send(JSON.stringify(request));
 		}
 	}
@@ -30,11 +28,15 @@ export class CyakoSocket{
 					let response = JSON.parse(data.data);
    		 			this.receiver.resolve(response);
 				}	
-    			// this.websocket.onclose = () =>{};
-   		    	// this.websocket.onerror = () =>{};
+    			this.websocket.onclose = () =>{
+					console.info("Closed.")
+    			};
+   		    	this.websocket.onerror = () =>{
+					console.info("Errord.")
+   		    	};
 				this.websocket.onopen = () => {
 					// this.socketCallback(this.websocket)
-					console.log("Connected.")
+					console.info("Connected.")
 					resolve();
 				}
   		  	}else{

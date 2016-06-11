@@ -207,8 +207,9 @@
 	            var entries = _this.queue.unsent.entries();
 	            var item = entries.next();
 	            while (!item.done) {
-	                var request = item.value[1].request;
-	                _this.socket.send(request);
+	                var task = item.value[1];
+	                _this.socket.send(task.request);
+	                _this.queue.setSent(task.id);
 	                item = entries.next();
 	            }
 	        };
@@ -266,8 +267,6 @@
 	    }
 	    CyakoSocket.prototype.send = function (request) {
 	        if (this.isConnected) {
-	            console.log(request);
-	            console.log(JSON.stringify(request));
 	            this.websocket.send(JSON.stringify(request));
 	        }
 	    };
@@ -280,11 +279,15 @@
 	                    var response = JSON.parse(data.data);
 	                    _this.receiver.resolve(response);
 	                };
-	                // this.websocket.onclose = () =>{};
-	                // this.websocket.onerror = () =>{};
+	                _this.websocket.onclose = function () {
+	                    console.info("Closed.");
+	                };
+	                _this.websocket.onerror = function () {
+	                    console.info("Errord.");
+	                };
 	                _this.websocket.onopen = function () {
 	                    // this.socketCallback(this.websocket)
-	                    console.log("Connected.");
+	                    console.info("Connected.");
 	                    resolve();
 	                };
 	            }

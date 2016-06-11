@@ -13,9 +13,10 @@ export class CyakoSender {
 			let entries = this.queue.unsent.entries();
 			let item = entries.next();
 			while(!item.done){
-				let request = item.value[1].request;
-				this.socket.send(request)
-				item = entries.next()
+				let task = item.value[1];
+				this.socket.send(task.request);
+				this.queue.setSent(task.id);
+				item = entries.next();
 			}
 		};
 		if (this.socket.isConnected()){
