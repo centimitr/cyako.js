@@ -74,7 +74,7 @@
 	    CyakoInstance.prototype.fetch = function (method, params, data) {
 	        var _this = this;
 	        var request = new request_1.CyakoRequest(method, params, data);
-	        request.setId("#" + this.index + ":" + method);
+	        request.setId("#" + this.index++ + ":" + method);
 	        return new Promise(function (resolve, rejecct) {
 	            var task = new task_1.CyakoTask('single', request, resolve, rejecct);
 	            _this.queue.add(task);
@@ -82,18 +82,36 @@
 	        });
 	    };
 	    CyakoInstance.prototype.listen = function (method, params, data) {
-	        var _this = this;
 	        var request = new request_1.CyakoRequest(method, params, data);
-	        request.setId("#" + this.index + ":" + method);
-	        return new Promise(function (resolve, rejecct) {
-	            var task = new task_1.CyakoTask('multiple', request, resolve, rejecct);
-	            _this.queue.add(task);
-	            _this.sender.send();
-	        });
+	        request.setId("#" + this.index++ + ":" + method);
+	        return new Listener(this.queue, this.sender, request);
 	    };
 	    return CyakoInstance;
 	}());
 	exports.CyakoInstance = CyakoInstance;
+	var Listener = (function () {
+	    function Listener(queue, sender, request) {
+	        var _this = this;
+	        this.queue = queue;
+	        this.sender = sender;
+	        this.isPause = false;
+	        this.promise = new Promise(function (resolve, rejecct) {
+	            _this.task = new task_1.CyakoTask('multiple', request, resolve, rejecct);
+	            _this.queue.add(_this.task);
+	            _this.sender.send();
+	        });
+	    }
+	    Listener.prototype.pause = function () {
+	        this.task.pause();
+	    };
+	    Listener.prototype.continue = function () {
+	        this.task.continue();
+	    };
+	    Listener.prototype.cancel = function () {
+	        this.queue.setFinished(this.task.id);
+	    };
+	    return Listener;
+	}());
 
 
 /***/ },
@@ -125,12 +143,19 @@
 	        this.id = request.id;
 	        this.type = type;
 	        this.request = request;
+	        this.acceptResolve = true;
 	        this.onresolve = resolve;
 	        this.onreject = reject;
 	        // this.createTime = new Date().toUTCString();
 	    }
 	    CyakoTask.prototype.expectMultiResponses = function () {
 	        return this.type === 'multiple';
+	    };
+	    CyakoTask.prototype.pause = function () {
+	        this.acceptResolve = false;
+	    };
+	    CyakoTask.prototype.continue = function () {
+	        this.acceptResolve = true;
 	    };
 	    CyakoTask.prototype.isTimeout = function () {
 	        return false;
@@ -237,9 +262,10 @@
 	        this.queue = queue;
 	    }
 	    CyakoReceiver.prototype.resolve = function (response) {
+	        console.log("RESOLVING:", response.id);
 	        var id = response.id;
 	        var task = this.queue.get(id);
-	        if (task) {
+	        if (task && task.acceptResolve) {
 	            task.onresolve(response);
 	            if (!task.expectMultiResponses()) {
 	                this.queue.setFinished(id);

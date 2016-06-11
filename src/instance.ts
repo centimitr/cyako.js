@@ -26,7 +26,7 @@ export class CyakoInstance {
     // API
     fetch(method:string,params:Object,data:Object){
     	let request = new CyakoRequest(method,params,data);
-        request.setId("#" + this.index + ":" + method);
+        request.setId("#" + this.index++ + ":" + method);
     	return new Promise((resolve,rejecct) => {
     		let task = new CyakoTask('single',request,resolve,rejecct);
     		this.queue.add(task);
@@ -36,11 +36,34 @@ export class CyakoInstance {
     
     listen(method: string, params: Object, data: Object) {
     	let request = new CyakoRequest(method,params,data);
-        request.setId("#" + this.index + ":" + method);
-    	return new Promise((resolve,rejecct) => {
-            let task = new CyakoTask('multiple', request, resolve, rejecct);
-            this.queue.add(task);
-    		this.sender.send()
-    	});
+        request.setId("#" + this.index++ + ":" + method);
+        return new Listener(this.queue,this.sender,request);
+    }
+}
+
+class Listener{
+    public promise: any;
+    public isPause: boolean;
+    public task: CyakoTask;
+    public queue: CyakoQueue;
+    public sender: CyakoSender;
+    constructor(queue:CyakoQueue,sender:CyakoSender,request:CyakoRequest){
+        this.queue = queue;
+        this.sender = sender;
+        this.isPause = false;
+        this.promise = new Promise((resolve, rejecct) => {
+            this.task = new CyakoTask('multiple', request, resolve, rejecct);
+            this.queue.add(this.task);
+            this.sender.send()
+        });
+    }
+    pause(){
+        this.task.pause();
+    }
+    continue(){
+        this.task.continue();
+    }
+    cancel(){
+        this.queue.setFinished(this.task.id);
     }
 }

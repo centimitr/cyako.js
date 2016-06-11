@@ -18,22 +18,25 @@
 		// 		console.log(error)
 		// 	})
 		// }
-		c.fetch('KVStoreExample.Example',{},{}).then((data)=>{
-			console.log(data)
-		},(error)=>{
-			console.log(error)
-		})
-		c.listen('RealtimeExample.JoinChatRoom',{},{}).then((data)=>{
-			console.log(data)
-		},(error)=>{
-			console.log(error)
-		})
-		var send = ()=>{
-			c.listen('RealtimeExample.SendChatMessage',{},{}).then((data)=>{
-				console.log(data)
-			},(error)=>{
-				console.log(error)
-			})	
+		// c.fetch('KVStoreExample.Example',{},{}).then((data)=>{console.log(data)},(error)=>{console.log(error)})
+		let l = c.listen('RealtimeExample.JoinChatRoom',{},{})
+		l.promise.then((data)=>{console.log("RECEIVED:",data.id)},(error)=>{console.log(error)});
+			// console.log("NOW START");
+			// setTimeout(function() {
+			// 	console.log("NOW PAUSE.");
+			// 	l.pause();
+			// }, 10*1000);
+			// setTimeout(function() {
+			// 	console.log("NOW CONTINUE.");
+			// 	l.continue();
+			// }, 20*1000);
+			// setTimeout(function() {
+			// 	console.log("NOW CANCEL.");
+			// 	l.cancel();
+			// }, 30*1000);
+		var send = () => {
+			let l = c.listen('RealtimeExample.SendChatMessage',{},{});
+			l.promise.then((data)=>{console.log("RECEIVED:",data.id)},(error)=>{console.log(error)});
 		}
 		</script>
 		<button onclick="send()">Send</button>
