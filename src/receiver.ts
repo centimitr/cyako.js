@@ -10,6 +10,8 @@ export class CyakoReceiver{
 		let id = response.id;
 		let task = this.queue.get(id);
 		if (task && task.acceptResolve) {
+			console.log("START RESOLVE.");
+			console.log(task.)
 			task.onresolve(response);
 			if (!task.expectMultiResponses()) {
 				this.queue.setFinished(id);

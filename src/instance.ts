@@ -41,8 +41,19 @@ export class CyakoInstance {
     }
 }
 
+class Stream {
+    public onresolve: Function;
+    public onreject: Function;
+    constructor() { }
+    then(resolve?:Function,reject?:Function){
+        this.onresolve = resolve;
+        this.onreject = reject;
+    }
+}
+
 class Listener{
     public promise: any;
+    public stream: Stream;
     public isPause: boolean;
     public task: CyakoTask;
     public queue: CyakoQueue;
@@ -51,10 +62,11 @@ class Listener{
         this.queue = queue;
         this.sender = sender;
         this.isPause = false;
+        this.stream = new Stream()
         this.promise = new Promise((resolve, rejecct) => {
-            this.task = new CyakoTask('multiple', request, resolve, rejecct);
+            this.task = new CyakoTask('multiple', request, resolve, rejecct,this.stream.onresolve, this.stream.onreject);
             this.queue.add(this.task);
-            this.sender.send()
+            this.sender.send();
         });
     }
     pause(){
