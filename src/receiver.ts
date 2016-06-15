@@ -6,15 +6,17 @@ export class CyakoReceiver{
 		this.queue = queue;
 	}
 	resolve(response:Response){
-		console.log("RESOLVING:", response.id);
+		// console.log("RESOLVING:", response.id);
 		let id = response.id;
 		let task = this.queue.get(id);
-		if (task && task.acceptResolve) {
-			console.log("START RESOLVE.");
-			console.log(task.)
-			task.onresolve(response);
-			if (!task.expectMultiResponses()) {
-				this.queue.setFinished(id);
+		if (task) {
+			if (task.expectDefaultResponse()){
+				task.onresolve(response)
+				if (!task.expectExtraResponse()) {
+					this.queue.setFinished(id);
+				}
+			}else if (task.expectExtraResponse() && task.acceptExtraResponse) {
+				task.extraOnresolve(response);
 			}
 		}
 	};

@@ -89,14 +89,24 @@
 	    return CyakoInstance;
 	}());
 	exports.CyakoInstance = CyakoInstance;
+	var Stream = (function () {
+	    function Stream() {
+	    }
+	    Stream.prototype.then = function (resolve, reject) {
+	        this.onresolve = resolve;
+	        this.onreject = reject;
+	    };
+	    return Stream;
+	}());
 	var Listener = (function () {
 	    function Listener(queue, sender, request) {
 	        var _this = this;
 	        this.queue = queue;
 	        this.sender = sender;
 	        this.isPause = false;
+	        this.stream = new Stream();
 	        this.promise = new Promise(function (resolve, rejecct) {
-	            _this.task = new task_1.CyakoTask('multiple', request, resolve, rejecct);
+	            _this.task = new task_1.CyakoTask('multiple', request, resolve, rejecct, _this.stream.onresolve, _this.stream.onreject);
 	            _this.queue.add(_this.task);
 	            _this.sender.send();
 	        });
@@ -139,23 +149,29 @@
 
 	"use strict";
 	var CyakoTask = (function () {
-	    function CyakoTask(type, request, resolve, reject) {
+	    function CyakoTask(type, request, resolve, reject, extraResolve, extraReject) {
 	        this.id = request.id;
 	        this.type = type;
 	        this.request = request;
-	        this.acceptResolve = true;
+	        this.acceptExtraResponse = true;
 	        this.onresolve = resolve;
 	        this.onreject = reject;
+	        this.extraOnresolve = extraResolve;
+	        this.extraOnreject = extraReject;
+	        this.responseTimes = 0;
 	        // this.createTime = new Date().toUTCString();
 	    }
-	    CyakoTask.prototype.expectMultiResponses = function () {
-	        return this.type === 'multiple';
+	    CyakoTask.prototype.expectDefaultResponse = function () {
+	        return this.responseTimes++ == 0;
+	    };
+	    CyakoTask.prototype.expectExtraResponse = function () {
+	        return this.responseTimes++ > 0 && (this.type === 'multi' || this.type === 'multiple');
 	    };
 	    CyakoTask.prototype.pause = function () {
-	        this.acceptResolve = false;
+	        this.acceptExtraResponse = false;
 	    };
 	    CyakoTask.prototype.continue = function () {
-	        this.acceptResolve = true;
+	        this.acceptExtraResponse = true;
 	    };
 	    CyakoTask.prototype.isTimeout = function () {
 	        return false;
@@ -262,13 +278,18 @@
 	        this.queue = queue;
 	    }
 	    CyakoReceiver.prototype.resolve = function (response) {
-	        console.log("RESOLVING:", response.id);
+	        // console.log("RESOLVING:", response.id);
 	        var id = response.id;
 	        var task = this.queue.get(id);
-	        if (task && task.acceptResolve) {
-	            task.onresolve(response);
-	            if (!task.expectMultiResponses()) {
-	                this.queue.setFinished(id);
+	        if (task) {
+	            if (task.expectDefaultResponse()) {
+	                task.onresolve(response);
+	                if (!task.expectExtraResponse()) {
+	                    this.queue.setFinished(id);
+	                }
+	            }
+	            else if (task.expectExtraResponse() && task.acceptExtraResponse) {
+	                task.extraOnresolve(response);
 	            }
 	        }
 	    };
