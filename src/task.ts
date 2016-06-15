@@ -23,10 +23,10 @@ export class CyakoTask{
 		// this.createTime = new Date().toUTCString();
 	}
 	expectDefaultResponse() {
-		return this.responseTimes++ == 0;
+		return this.responseTimes === 0;
 	}
 	expectExtraResponse() {
-		return this.responseTimes++ >0 && (this.type==='multi'||this.type==='multiple')
+		return this.type === 'multi' || this.type === 'multiple';
 	}
 	pause() {
 		this.acceptExtraResponse = false;

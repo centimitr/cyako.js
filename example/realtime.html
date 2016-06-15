@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title></title>
+</head>
+<body>
+<script type="text/javascript" src="../dist/bundle.js"></script>
+<!--  -->
+<script type="text/javascript">
+	var c = new Cyako("ws://localhost:3000");
+	var l = c.listen("RealtimeExample.JoinChatRoom",{},{});
+	l.promise.then(data=>{
+		console.log("Replied:",data);
+	});
+	l.stream.then(data=>{
+		console.log("Received:",data);
+		alert(1);
+		let message = document.getElementById('messages').value;
+		let m = document.createElement("div");
+		let content = document.createTextNode(JSON.stringify(data));
+		m.appendChild(content);
+	},err=>{})
+</script>
+<!--  -->
+<script type="text/javascript">
+	function send(){
+		let message = document.getElementById('message').value;
+		c.fetch("RealtimeExample.SendChatMessage",{message:message},{}).then(data=>{},err=>{});
+	}
+</script>
+<!--  -->
+<div>
+	<div id="meesages">
+	</div>
+	<div>
+		<input type="text" id="message">
+		<button onclick="send()">Send</button>
+	</div>	
+</div>
+<!--  -->
+</body>
+</html>

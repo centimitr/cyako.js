@@ -91,8 +91,19 @@
 	exports.CyakoInstance = CyakoInstance;
 	var Stream = (function () {
 	    function Stream() {
+	        this.onresolve = function () { };
+	        this.onreject = function () { };
 	    }
+	    Stream.prototype.resolve = function () {
+	        console.log("Stream Resolved");
+	        console.log(this.onresolve);
+	        this.onresolve();
+	    };
+	    Stream.prototype.reject = function () {
+	        this.onreject();
+	    };
 	    Stream.prototype.then = function (resolve, reject) {
+	        console.log(this.onresolve, this.onreject);
 	        this.onresolve = resolve;
 	        this.onreject = reject;
 	    };
@@ -162,10 +173,10 @@
 	        // this.createTime = new Date().toUTCString();
 	    }
 	    CyakoTask.prototype.expectDefaultResponse = function () {
-	        return this.responseTimes++ == 0;
+	        return this.responseTimes === 0;
 	    };
 	    CyakoTask.prototype.expectExtraResponse = function () {
-	        return this.responseTimes++ > 0 && (this.type === 'multi' || this.type === 'multiple');
+	        return this.type === 'multi' || this.type === 'multiple';
 	    };
 	    CyakoTask.prototype.pause = function () {
 	        this.acceptExtraResponse = false;
@@ -278,17 +289,20 @@
 	        this.queue = queue;
 	    }
 	    CyakoReceiver.prototype.resolve = function (response) {
-	        // console.log("RESOLVING:", response.id);
 	        var id = response.id;
 	        var task = this.queue.get(id);
 	        if (task) {
 	            if (task.expectDefaultResponse()) {
 	                task.onresolve(response);
+	                task.responseTimes++;
 	                if (!task.expectExtraResponse()) {
 	                    this.queue.setFinished(id);
 	                }
 	            }
 	            else if (task.expectExtraResponse() && task.acceptExtraResponse) {
+	                console.log("Stream Received.");
+	                console.log(task.extraOnresolve);
+	                task.responseTimes++;
 	                task.extraOnresolve(response);
 	            }
 	        }
