@@ -1,5 +1,5 @@
 import {CyakoRequest} from "./request";
-import {CyakoTask} from "./task";
+import {CyakoFetchTask,CyakoListenTask} from "./task";
 import {CyakoQueue} from "./queue";
 import {CyakoSender} from "./sender";
 import {CyakoReceiver} from "./receiver";
@@ -24,70 +24,79 @@ export class CyakoInstance {
     };
 
     // API
-    fetch(method:string,params:Object,data:Object){
-    	let request = new CyakoRequest(method,params,data);
-        request.setId("#" + this.index++ + ":" + method);
-    	return new Promise((resolve,rejecct) => {
-    		let task = new CyakoTask('single',request,resolve,rejecct);
-    		this.queue.add(task);
-    		this.sender.send();
-    	});
-    }
+    // fetch(method:string,params:Object,data:Object){
+    // 	let request = new CyakoRequest(method,params,data);
+    //     request.setId("#" + this.index++ + ":" + method);
+    // 	return new Promise((resolve,rejecct) => {
+    // 		let task = new CyakoTask('single',request,resolve,rejecct);
+    // 		this.queue.add(task);
+    // 		this.sender.send();
+    // 	});
+    // }
     
-    listen(method: string, params: Object, data: Object) {
-    	let request = new CyakoRequest(method,params,data);
+    // listen(method: string, params: Object, data: Object) {
+    // 	let request = new CyakoRequest(method,params,data);
+    //     request.setId("#" + this.index++ + ":" + method);
+    //     return new Listener(this.queue,this.sender,request);
+    // }
+    fetch(method:string,params:Object,data:Object){
+        let request = new CyakoRequest(method,params,data);
         request.setId("#" + this.index++ + ":" + method);
-        return new Listener(this.queue,this.sender,request);
-    }
-}
-
-class Stream {
-    public onresolve: Function;
-    public onreject: Function;
-    constructor() {
-        this.onresolve = () => { }
-        this.onreject = () => { }
-    }
-    resolve(){
-        console.log("Stream Resolved");
-        console.log(this.onresolve);
-        this.onresolve();
-    }
-    reject(){
-        this.onreject();
-    }
-    then(resolve:Function,reject:Function){
-        console.log(this.onresolve,this.onreject);
-        this.onresolve = resolve;
-        this.onreject = reject;
-    }
-}
-
-class Listener{
-    public promise: any;
-    public stream: Stream;
-    public isPause: boolean;
-    public task: CyakoTask;
-    public queue: CyakoQueue;
-    public sender: CyakoSender;
-    constructor(queue:CyakoQueue,sender:CyakoSender,request:CyakoRequest){
-        this.queue = queue;
-        this.sender = sender;
-        this.isPause = false;
-        this.stream = new Stream();
-        this.promise = new Promise((resolve, rejecct) => {
-            this.task = new CyakoTask('multiple', request, resolve, rejecct,this.stream.onresolve, this.stream.onreject);
-            this.queue.add(this.task);
+        return new Promise((resolve,rejecct) => {
+            let task = new CyakoFetchTask(request,resolve,rejecct);
+            this.queue.add(task);
             this.sender.send();
         });
     }
-    pause(){
-        this.task.pause();
-    }
-    continue(){
-        this.task.continue();
-    }
-    cancel(){
-        this.queue.setFinished(this.task.id);
-    }
 }
+
+// class Stream {
+//     public onresolve: Function;
+//     public onreject: Function;
+//     constructor() {
+//         this.onresolve = () => { }
+//         this.onreject = () => { }
+//     }
+//     resolve(){
+//         console.log("Stream Resolved");
+//         console.log(this.onresolve);
+//         this.onresolve();
+//     }
+//     reject(){
+//         this.onreject();
+//     }
+//     then(resolve:Function,reject:Function){
+//         console.log(this.onresolve,this.onreject);
+//         this.onresolve = resolve;
+//         this.onreject = reject;
+//     }
+// }
+
+// class Listener{
+//     public promise: any;
+//     public stream: Stream;
+//     public isPause: boolean;
+//     public task: CyakoTask;
+//     public queue: CyakoQueue;
+//     public sender: CyakoSender;
+//     constructor(queue:CyakoQueue,sender:CyakoSender,request:CyakoRequest){
+//         this.queue = queue;
+//         this.sender = sender;
+//         this.isPause = false;
+//         this.stream = new Stream();
+//         this.promise = new Promise((resolve, rejecct) => {
+//             this.task = new CyakoTask('multiple', request, resolve, rejecct,this.stream.onresolve, this.stream.onreject);
+//             this.queue.add(this.task);
+//             this.sender.send();
+//         });
+//     }
+//     pause(){
+//         this.task.pause();
+//     }
+//     continue(){
+//         this.task.continue();
+//     }
+//     cancel(){
+//         this.queue.setFinished(this.task.id);
+//     }
+// }

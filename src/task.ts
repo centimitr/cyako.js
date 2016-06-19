@@ -1,4 +1,6 @@
 import {CyakoRequest} from "./request"
+import {CyakoResponse} from "./receiver";
+
 
 // export class CyakoTask{
 // 	public id: string;
@@ -39,24 +41,42 @@ import {CyakoRequest} from "./request"
 // 	}
 // }
 
-interface CyakoTask{
-	handle()
+export interface CyakoTask{
+	// id: string
+	// handle()
+	id:string;
+	handle(response:CyakoResponse);
 }
 
-export class CyakoFetchTask{
+export class CyakoFetchTask implements CyakoTask{
 	public id: string;
 	public request: CyakoRequest;
 	public onresolve: Function;
 	public onreject: Function;
-	constructor() {}
-	handle() {}
+	constructor(request: CyakoRequest, resolve: Function, reject: Function) {
+		this.id = request.id;
+		this.onresolve = resolve;
+		this.onreject = reject;
+	}
+	handle(response:CyakoResponse) {
+		this.onresolve(response);
+	}
 }
 
-export class CyakoListenTask {
+export class CyakoListenTask implements CyakoTask{
 	public id: string;
 	public request: CyakoRequest;
 	public onresolve: Function;
 	public onreject: Function;
-	constructor() {}
-	handle() {}
+	constructor(request: CyakoRequest, resolve: Function, reject: Function) {
+		this.id = request.id;
+		this.onresolve = resolve;
+		this.onreject = reject;
+	} 
+	handle(response: CyakoResponse) {
+		this.onresolve(response);
+	}
+	pause() { }
+	resume() { }
+	cancel() { }
 }
