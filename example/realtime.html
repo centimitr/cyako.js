@@ -10,21 +10,32 @@
 	var c = new Cyako("ws://localhost:3000");
 	var l = c.listen("RealtimeExample.JoinChatRoom",{},{});
 	l.then(data=>{
-		console.log("Replied:",data.params.message);
+		console.log('Replied:',data.params.message);
 		let messages = document.getElementById('messages');
 		let m = document.createElement('div');
-		let content = document.createTextNode(data.params.message);
+		m.classList.add('received-message');
+		let content = document.createElement('div');
+		content.classList.add('content')
+		let text = document.createTextNode(data.params.message);
+		content.appendChild(text);
 		m.appendChild(content);
-		m.classList.add("received-message");
 		messages.appendChild(m);
 		m.scrollIntoView();
 	});
 </script>
 <!--  -->
 <script type="text/javascript">
+	// document.getElementById('message').focus;
 	function send(){
 		let message = document.getElementById('message').value;
-		c.fetch("RealtimeExample.SendChatMessage",{message:message},{}).then(data=>{},err=>{});
+		c.fetch("RealtimeExample.SendChatMessage",{message:message},{}).then(data=>{
+			document.getElementById('message').value='';
+		},err=>{});
+	}
+	function doEnterSend(event){
+		if (event.code==='Enter') {
+			send();
+		}
 	}
 </script>
 <!--  -->
@@ -47,14 +58,26 @@
 		right: 0;
 		bottom: 46px;
 	}
+	#messages .notification{
+		text-align: center;
+		font-size: 14px;
+		color: #666;
+		margin: 8px auto;
+	}
 	#messages .received-message{
+		width: 100%;
+	}
+	#messages .received-message .content{
 		font-size: 15px;
 		border-radius: 6px;
-		padding: 12px 12px;
-		margin: 8px 6px;
+		padding: 12px 18px;
+		margin: 8px 12px;
 		word-wrap: break-word;
 		line-height: 1.8;
 		background-color: #eee;
+		display:inline-block;
+		max-width: 60%;
+		white-space: pre-line;
 	}
 	#sendbox{
 		position: absolute;
@@ -82,9 +105,10 @@
 </style>
 <div class="container">
 	<div id="messages">
+		<div class="notification">Welcome to the chatroom!</div>
 	</div>
 	<div id="sendbox">
-		<input type="text" id="message">
+		<input type="text" id="message" autofocus onkeypress="doEnterSend(event)">
 		<button onclick="send()">Send</button>
 	</div>	
 </div>
