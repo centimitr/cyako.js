@@ -1,6 +1,6 @@
 {
   "name": "cyako.js",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "Cyako in frontend.",
   "main": "./dist/bundle.js",
   "scripts": {
