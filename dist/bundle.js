@@ -99,8 +99,8 @@
 	        var _this = this;
 	        var request = new request_1.CyakoRequest(method, params, data);
 	        request.setId("#" + this.index++ + ":" + method);
-	        return new CyakoHandler(this.queue, function (resolve, reject) {
-	            var task = new task_1.CyakoListenTask(request, resolve, reject);
+	        return new CyakoHandler(this.queue, function (ack, resolve, reject) {
+	            var task = new task_1.CyakoListenTask(request, ack, resolve, reject);
 	            _this.queue.add(task);
 	            _this.sender.send();
 	            return task;
@@ -113,8 +113,8 @@
 	    function CyakoHandler(queue, fn) {
 	        this.fn = fn;
 	    }
-	    CyakoHandler.prototype.then = function (resolve, reject) {
-	        this.fn(resolve, reject);
+	    CyakoHandler.prototype.then = function (ack, resolve, reject) {
+	        this.fn(ack, resolve, reject);
 	    };
 	    CyakoHandler.prototype.pause = function () {
 	        this.task.pause();
@@ -216,17 +216,19 @@
 	}());
 	exports.CyakoFetchTask = CyakoFetchTask;
 	var CyakoListenTask = (function () {
-	    function CyakoListenTask(request, resolve, reject) {
+	    function CyakoListenTask(request, ack, resolve, reject) {
 	        this.id = request.id;
 	        this.request = request;
 	        this.onresolve = resolve;
 	        this.onreject = reject;
+	        this.onack = ack;
 	        this.expectAck = true;
 	        this.accecptResponse = true;
 	    }
 	    CyakoListenTask.prototype.handle = function (response) {
 	        if (this.accecptResponse) {
 	            if (this.expectAck) {
+	                this.onack(response);
 	                this.expectAck = false;
 	            }
 	            else {

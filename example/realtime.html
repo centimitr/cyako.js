@@ -9,11 +9,25 @@
 <script type="text/javascript">
 	var c = new Cyako("ws://localhost:3000");
 	var l = c.listen("RealtimeExample.JoinChatRoom",{},{});
-	l.then(data=>{
+	l.then(ack=>{
+		console.log("Welcome!");
+		let messages = document.getElementById('messages');
+		let notification = document.createElement('div');
+		notification.classList.add('notification');
+		let text = document.createTextNode('Welcome to the chatroom!');
+		notification.appendChild(text);
+		messages.appendChild(notification);
+	},data=>{
 		console.log('Replied:',data.params.message);
 		let messages = document.getElementById('messages');
 		let m = document.createElement('div');
 		m.classList.add('received-message');
+		let meta = document.createElement('div');
+		meta.classList.add('meta');
+		let date = new Date();
+		let metastr = document.createTextNode(date.getHours()+':'+date.getMinutes());
+		meta.appendChild(metastr);
+		m.appendChild(meta);
 		let content = document.createElement('div');
 		content.classList.add('content')
 		let text = document.createTextNode(data.params.message);
@@ -28,9 +42,11 @@
 	// document.getElementById('message').focus;
 	function send(){
 		let message = document.getElementById('message').value;
-		c.fetch("RealtimeExample.SendChatMessage",{message:message},{}).then(data=>{
-			document.getElementById('message').value='';
-		},err=>{});
+		if (message!=='') {	
+			c.fetch("RealtimeExample.SendChatMessage",{message:message},{}).then(data=>{
+				document.getElementById('message').value='';
+			},err=>{});
+		}
 	}
 	function doEnterSend(event){
 		if (event.code==='Enter') {
@@ -57,6 +73,7 @@
 		left: 0;
 		right: 0;
 		bottom: 46px;
+		padding-bottom: 8px;
 	}
 	#messages .notification{
 		text-align: center;
@@ -67,17 +84,23 @@
 	#messages .received-message{
 		width: 100%;
 	}
+	#messages .received-message .meta{
+		margin: 6px 12px 0 12px;
+		padding: 0 6px;
+		font-size: 14px;
+		color: #999;
+	}
 	#messages .received-message .content{
 		font-size: 15px;
 		border-radius: 6px;
 		padding: 12px 18px;
-		margin: 8px 12px;
+		margin: 2px 12px 6px 12px;
 		word-wrap: break-word;
 		line-height: 1.8;
 		background-color: #eee;
 		display:inline-block;
-		max-width: 60%;
-		white-space: pre-line;
+		max-width: 75%;
+		white-space: pre-wrap;
 	}
 	#sendbox{
 		position: absolute;
@@ -86,6 +109,7 @@
 		right: 0;
 		background-color: #eee;
 		padding: 4px 12px;
+		border-top: 1px solid #ccc;
 		display: flex;
 	}
 	#sendbox #message,#sendbox button{
@@ -94,10 +118,12 @@
 	#sendbox #message{
 		width: 100%;
 		outline: none;
-		font-size: 18px;
+		border: none;
+		background: transparent;
+		font-size: 15px;
 	}
 	#sendbox button{
-		margin-left: 8px;
+		margin-left: 12px;
 		padding-left: 12px;
 		padding-right: 12px;
 		height: 38px;
@@ -105,10 +131,10 @@
 </style>
 <div class="container">
 	<div id="messages">
-		<div class="notification">Welcome to the chatroom!</div>
+		<!-- <div class="notification">Welcome to the chatroom!</div> -->
 	</div>
 	<div id="sendbox">
-		<input type="text" id="message" autofocus onkeypress="doEnterSend(event)">
+		<input type="text" id="message" placeholder=" Type..." autofocus onkeypress="doEnterSend(event)">
 		<button onclick="send()">Send</button>
 	</div>	
 </div>

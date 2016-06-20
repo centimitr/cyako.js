@@ -52,8 +52,8 @@ export class CyakoInstance {
     listen(method: string, params: Object, data: Object) {
         let request = new CyakoRequest(method, params, data);
         request.setId("#" + this.index++ + ":" + method);
-        return new CyakoHandler(this.queue,(resolve:Function,reject:Function)=>{
-            let task = new CyakoListenTask(request, resolve, reject);
+        return new CyakoHandler(this.queue,(ack:Function,resolve:Function,reject:Function)=>{
+            let task = new CyakoListenTask(request, ack, resolve, reject);
             this.queue.add(task);
             this.sender.send();
             return task;
@@ -68,8 +68,8 @@ class CyakoHandler{
     constructor(queue:CyakoQueue,fn:Function){
         this.fn = fn;
     }
-    then(resolve:Function,reject:Function){
-        this.fn(resolve,reject);
+    then(ack:Function,resolve:Function,reject:Function){
+        this.fn(ack,resolve,reject);
     }
     pause(){
         this.task.pause();
