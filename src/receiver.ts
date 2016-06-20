@@ -1,5 +1,5 @@
 import {CyakoQueue} from "./queue";
-import {CyakoTask} from "./task";
+import {CyakoTask,CyakoFetchTask,CyakoListenTask} from "./task";
 
 
 export class CyakoReceiver{
@@ -13,25 +13,13 @@ export class CyakoReceiver{
 		task = this.queue.get(id);
 		if(task) {
 			task.handle(response);
-			console.log(typeof task);
+			if(task instanceof CyakoFetchTask) {
+				this.queue.setFinished(task.id);
+			}
 		}
-		// if (task) {
-		// 	if (task.expectDefaultResponse()){
-		// 		task.onresolve(response)
-		// 		task.responseTimes++;
-		// 		if (!task.expectExtraResponse()) {
-		// 			this.queue.setFinished(id);
-		// 		}
-		// 	}else if (task.expectExtraResponse() && task.acceptExtraResponse) {
-		// 		console.log("Stream Received.");
-		// 		console.log(task.extraOnresolve);
-		// 		task.responseTimes++;
-		// 		task.extraOnresolve(response);
-		// 	}
-		// }
 	};
 }
 
-export interface CyakoResponse{
-	id:string
+export interface CyakoResponse {
+	id: string
 }

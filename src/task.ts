@@ -45,7 +45,7 @@ export interface CyakoTask{
 	// id: string
 	// handle()
 	id:string;
-	handle(response:CyakoResponse);
+	handle(response:CyakoResponse):any;
 }
 
 export class CyakoFetchTask implements CyakoTask{
@@ -55,6 +55,7 @@ export class CyakoFetchTask implements CyakoTask{
 	public onreject: Function;
 	constructor(request: CyakoRequest, resolve: Function, reject: Function) {
 		this.id = request.id;
+		this.request = request;
 		this.onresolve = resolve;
 		this.onreject = reject;
 	}
@@ -68,15 +69,31 @@ export class CyakoListenTask implements CyakoTask{
 	public request: CyakoRequest;
 	public onresolve: Function;
 	public onreject: Function;
+	public expectAck: boolean;
+	public accecptResponse: boolean;
 	constructor(request: CyakoRequest, resolve: Function, reject: Function) {
 		this.id = request.id;
+		this.request = request;
 		this.onresolve = resolve;
 		this.onreject = reject;
-	} 
-	handle(response: CyakoResponse) {
-		this.onresolve(response);
+		this.expectAck = true;
+		this.accecptResponse = true;
 	}
-	pause() { }
-	resume() { }
-	cancel() { }
+	handle(response: CyakoResponse) {
+		if(this.accecptResponse) {
+			if (this.expectAck) {
+				this.expectAck = false;
+				// if (response.isAckOk === 'ok') {	
+				// }
+			} else {
+				this.onresolve(response);
+			}
+		}
+	}
+	pause() {
+		this.accecptResponse = false;
+	}
+	resume() {
+		this.accecptResponse = false;
+	}
 }

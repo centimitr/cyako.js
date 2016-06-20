@@ -42,11 +42,43 @@ export class CyakoInstance {
     fetch(method:string,params:Object,data:Object){
         let request = new CyakoRequest(method,params,data);
         request.setId("#" + this.index++ + ":" + method);
-        return new Promise((resolve,rejecct) => {
-            let task = new CyakoFetchTask(request,resolve,rejecct);
+        return new Promise((resolve, reject) => {
+            let task = new CyakoFetchTask(request, resolve, reject);
             this.queue.add(task);
             this.sender.send();
         });
+    }
+
+    listen(method: string, params: Object, data: Object) {
+        let request = new CyakoRequest(method, params, data);
+        request.setId("#" + this.index++ + ":" + method);
+        return new CyakoHandler(this.queue,(resolve:Function,reject:Function)=>{
+            let task = new CyakoListenTask(request, resolve, reject);
+            this.queue.add(task);
+            this.sender.send();
+            return task;
+        })
+    }
+}
+
+class CyakoHandler{
+    public queue: CyakoQueue;
+    public task: CyakoListenTask;
+    public fn: Function;
+    constructor(queue:CyakoQueue,fn:Function){
+        this.fn = fn;
+    }
+    then(resolve:Function,reject:Function){
+        this.fn(resolve,reject);
+    }
+    pause(){
+        this.task.pause();
+    }
+    resume(){
+        this.task.resume();
+    }
+    cancel(){
+        this.queue.setFinished(this.task.id);
     }
 }
 
