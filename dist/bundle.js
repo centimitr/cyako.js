@@ -63,7 +63,6 @@
 	    function CyakoInstance(url) {
 	        this.url = url;
 	        this.queue = new queue_1.CyakoQueue();
-	        // this.socket = new socket((socket)=>{this.websocket = socket;});
 	        this.receiver = new receiver_1.CyakoReceiver(this.queue);
 	        this.socket = new socket_1.CyakoSocket(this.url, this.receiver);
 	        this.sender = new sender_1.CyakoSender(this.queue, this.socket);
@@ -71,24 +70,10 @@
 	    }
 	    ;
 	    // API
-	    // fetch(method:string,params:Object,data:Object){
-	    // 	let request = new CyakoRequest(method,params,data);
-	    //     request.setId("#" + this.index++ + ":" + method);
-	    // 	return new Promise((resolve,rejecct) => {
-	    // 		let task = new CyakoTask('single',request,resolve,rejecct);
-	    // 		this.queue.add(task);
-	    // 		this.sender.send();
-	    // 	});
-	    // }
-	    // listen(method: string, params: Object, data: Object) {
-	    // 	let request = new CyakoRequest(method,params,data);
-	    //     request.setId("#" + this.index++ + ":" + method);
-	    //     return new Listener(this.queue,this.sender,request);
-	    // }
 	    CyakoInstance.prototype.fetch = function (method, params, data) {
 	        var _this = this;
 	        var request = new request_1.CyakoRequest(method, params, data);
-	        request.setId("#" + this.index++ + ":" + method);
+	        request.setId('#' + this.index++ + ':' + method);
 	        return new Promise(function (resolve, reject) {
 	            var task = new task_1.CyakoFetchTask(request, resolve, reject);
 	            _this.queue.add(task);
@@ -98,8 +83,8 @@
 	    CyakoInstance.prototype.listen = function (method, params, data) {
 	        var _this = this;
 	        var request = new request_1.CyakoRequest(method, params, data);
-	        request.setId("#" + this.index++ + ":" + method);
-	        return new CyakoHandler(this.queue, function (ack, resolve, reject) {
+	        request.setId('#' + this.index++ + ':' + method);
+	        return new CyakoListenHandler(this.queue, function (ack, resolve, reject) {
 	            var task = new task_1.CyakoListenTask(request, ack, resolve, reject);
 	            _this.queue.add(task);
 	            _this.sender.send();
@@ -109,73 +94,27 @@
 	    return CyakoInstance;
 	}());
 	exports.CyakoInstance = CyakoInstance;
-	var CyakoHandler = (function () {
-	    function CyakoHandler(queue, fn) {
+	var CyakoListenHandler = (function () {
+	    function CyakoListenHandler(queue, fn) {
+	        this.queue = queue;
 	        this.fn = fn;
 	    }
-	    CyakoHandler.prototype.then = function (ack, resolve, reject) {
-	        this.fn(ack, resolve, reject);
+	    CyakoListenHandler.prototype.then = function (ack, resolve, reject) {
+	        // remove the previos task from the queue
+	        this.cancel();
+	        this.task = this.fn(ack, resolve, reject);
 	    };
-	    CyakoHandler.prototype.pause = function () {
-	        this.task.pause();
+	    CyakoListenHandler.prototype.pause = function () {
+	        this.task && this.task.pause();
 	    };
-	    CyakoHandler.prototype.resume = function () {
-	        this.task.resume();
+	    CyakoListenHandler.prototype.resume = function () {
+	        this.task && this.task.resume();
 	    };
-	    CyakoHandler.prototype.cancel = function () {
-	        this.queue.setFinished(this.task.id);
+	    CyakoListenHandler.prototype.cancel = function () {
+	        this.task && this.queue.setFinished(this.task.id);
 	    };
-	    return CyakoHandler;
+	    return CyakoListenHandler;
 	}());
-	// class Stream {
-	//     public onresolve: Function;
-	//     public onreject: Function;
-	//     constructor() {
-	//         this.onresolve = () => { }
-	//         this.onreject = () => { }
-	//     }
-	//     resolve(){
-	//         console.log("Stream Resolved");
-	//         console.log(this.onresolve);
-	//         this.onresolve();
-	//     }
-	//     reject(){
-	//         this.onreject();
-	//     }
-	//     then(resolve:Function,reject:Function){
-	//         console.log(this.onresolve,this.onreject);
-	//         this.onresolve = resolve;
-	//         this.onreject = reject;
-	//     }
-	// }
-	// class Listener{
-	//     public promise: any;
-	//     public stream: Stream;
-	//     public isPause: boolean;
-	//     public task: CyakoTask;
-	//     public queue: CyakoQueue;
-	//     public sender: CyakoSender;
-	//     constructor(queue:CyakoQueue,sender:CyakoSender,request:CyakoRequest){
-	//         this.queue = queue;
-	//         this.sender = sender;
-	//         this.isPause = false;
-	//         this.stream = new Stream();
-	//         this.promise = new Promise((resolve, rejecct) => {
-	//             this.task = new CyakoTask('multiple', request, resolve, rejecct,this.stream.onresolve, this.stream.onreject);
-	//             this.queue.add(this.task);
-	//             this.sender.send();
-	//         });
-	//     }
-	//     pause(){
-	//         this.task.pause();
-	//     }
-	//     continue(){
-	//         this.task.continue();
-	//     }
-	//     cancel(){
-	//         this.queue.setFinished(this.task.id);
-	//     }
-	// }
 
 
 /***/ },
@@ -367,12 +306,9 @@
 
 	"use strict";
 	var CyakoSocket = (function () {
-	    // constructor(url,callback){
 	    function CyakoSocket(url, receiver) {
 	        this.url = url;
 	        this.receiver = receiver;
-	        // this.socketCallback = callback;
-	        // this.websocket;
 	    }
 	    CyakoSocket.prototype.send = function (request) {
 	        if (this.isConnected) {
@@ -395,7 +331,6 @@
 	                    console.info("Errord.");
 	                };
 	                _this.websocket.onopen = function () {
-	                    // this.socketCallback(this.websocket)
 	                    console.info("Connected.");
 	                    resolve();
 	                };

@@ -1,16 +1,13 @@
-import {CyakoReceiver} from "./receiver";
-import {CyakoRequest} from "./request";
+import {CyakoReceiver} from './receiver';
+import {CyakoRequest} from './request';
 
 export class CyakoSocket{
 	public url: string;
-	public receiver: CyakoReceiver;
-	public websocket: WebSocket;
-	// constructor(url,callback){
+	private receiver: CyakoReceiver;
+	private websocket: WebSocket;
 	constructor(url:string,receiver:CyakoReceiver){
 		this.url = url;
 		this.receiver = receiver;
-		// this.socketCallback = callback;
-		// this.websocket;
 	}
 	send(request:CyakoRequest){
 		if (this.isConnected){
@@ -35,7 +32,6 @@ export class CyakoSocket{
 					console.info("Errord.")
    		    	};
 				this.websocket.onopen = () => {
-					// this.socketCallback(this.websocket)
 					console.info("Connected.")
 					resolve();
 				}

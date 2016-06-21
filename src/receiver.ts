@@ -1,9 +1,9 @@
-import {CyakoQueue} from "./queue";
-import {CyakoTask,CyakoFetchTask,CyakoListenTask} from "./task";
-
+import {CyakoQueue} from './queue';
+import {CyakoTask,CyakoFetchTask,CyakoListenTask} from './task';
+import {CyakoResponse} from './response';
 
 export class CyakoReceiver{
-	public queue: CyakoQueue;
+	private queue: CyakoQueue;
 	constructor(queue:CyakoQueue){
 		this.queue = queue;
 	}
@@ -18,8 +18,4 @@ export class CyakoReceiver{
 			}
 		}
 	};
-}
-
-export interface CyakoResponse {
-	id: string
 }
