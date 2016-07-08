@@ -64,7 +64,7 @@
 	        this.url = url;
 	        this.queue = new queue_1.CyakoQueue();
 	        this.receiver = new receiver_1.CyakoReceiver(this.queue);
-	        this.socket = new socket_1.CyakoSocket(this.url, this.receiver);
+	        this.socket = new socket_1.CyakoSocket(this.url, this.receiver, this.queue);
 	        this.sender = new sender_1.CyakoSender(this.queue, this.socket);
 	        this.index = 0;
 	    }
@@ -188,9 +188,10 @@
 
 /***/ },
 /* 4 */
-/***/ function(module, exports) {
+/***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
+	var task_1 = __webpack_require__(3);
 	var CyakoQueue = (function () {
 	    function CyakoQueue() {
 	        this.unsent = new Map();
@@ -231,6 +232,17 @@
 	        setTimeout(function () {
 	            op(_this.sent);
 	        }, timeout);
+	    };
+	    CyakoQueue.prototype.isNeedReconnect = function () {
+	        var entries = this.sent.entries();
+	        var item = entries.next();
+	        while (!item.done) {
+	            var task = item.value;
+	            if (task instanceof task_1.CyakoListenTask) {
+	                return true;
+	            }
+	        }
+	        return false;
 	    };
 	    return CyakoQueue;
 	}());
@@ -306,9 +318,10 @@
 
 	"use strict";
 	var CyakoSocket = (function () {
-	    function CyakoSocket(url, receiver) {
+	    function CyakoSocket(url, receiver, queue) {
 	        this.url = url;
 	        this.receiver = receiver;
+	        this.queue = queue;
 	    }
 	    CyakoSocket.prototype.send = function (request) {
 	        if (this.isConnected) {
@@ -326,6 +339,9 @@
 	                };
 	                _this.websocket.onclose = function () {
 	                    console.info("Closed.");
+	                    if (_this.queue.isNeedReconnect()) {
+	                        _this.connect();
+	                    }
 	                };
 	                _this.websocket.onerror = function () {
 	                    console.info("Errord.");

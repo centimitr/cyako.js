@@ -1,13 +1,17 @@
 import {CyakoReceiver} from './receiver';
 import {CyakoRequest} from './request';
+import {CyakoQueue} from './queue';
+
 
 export class CyakoSocket{
 	public url: string;
 	private receiver: CyakoReceiver;
+	private queue:CyakoQueue;
 	private websocket: WebSocket;
-	constructor(url:string,receiver:CyakoReceiver){
+	constructor(url:string,receiver:CyakoReceiver,queue:CyakoQueue){
 		this.url = url;
 		this.receiver = receiver;
+		this.queue = queue;
 	}
 	send(request:CyakoRequest){
 		if (this.isConnected){
@@ -24,13 +28,16 @@ export class CyakoSocket{
 				this.websocket.onmessage = (data:ReceivedData) =>{
 					let response = JSON.parse(data.data);
    		 			this.receiver.resolve(response);
-				}	
+				}
     			this.websocket.onclose = () =>{
 					console.info("Closed.")
-    			};
-   		    	this.websocket.onerror = () =>{
+					if(this.queue.isNeedReconnect()) {
+						this.connect();
+					}
+				};
+				this.websocket.onerror = () =>{
 					console.info("Errord.")
-   		    	};
+				};
 				this.websocket.onopen = () => {
 					console.info("Connected.")
 					resolve();

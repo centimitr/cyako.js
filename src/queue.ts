@@ -1,4 +1,4 @@
-import {CyakoTask} from "./task";
+import {CyakoTask,CyakoListenTask} from "./task";
 
 export class CyakoQueue{
 	public unsent: any;
@@ -41,5 +41,16 @@ export class CyakoQueue{
 		setTimeout(()=>{
 			op(this.sent);
 		},timeout)
+	}
+	isNeedReconnect(){
+		let entries = this.sent.entries();
+		let item = entries.next();
+		while(!item.done){
+			let task = item.value;
+			if(task instanceof CyakoListenTask){
+				return true
+			}
+		}
+		return false
 	}
 }

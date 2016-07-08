@@ -17,7 +17,7 @@ export class CyakoInstance {
         this.url=url;
     	this.queue = new CyakoQueue();
     	this.receiver = new CyakoReceiver(this.queue);
-    	this.socket = new CyakoSocket(this.url,this.receiver);
+    	this.socket = new CyakoSocket(this.url,this.receiver,this.queue);
     	this.sender = new CyakoSender(this.queue,this.socket);
         this.index = 0;
     };
